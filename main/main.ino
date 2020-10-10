@@ -1,23 +1,30 @@
 #define USE_ARDUINO_INTERRUPTS true    // Set-up low-level interrupts for most acurate BPM math.
-#include <PulseSensorPlayground.h>     // Includes the PulseSensorPlayground Library.   
 
-//  Variables
-const int motorPin = 6;
-const int vibThreshold = 110;
-const int PulseWire = 0; 
-const int LED13 = 13;
-int Threshold = 515;
-const int CountMeasures = 25;
-int counter = 0;
-const int GSR=SCL;
-int sensorValue=0;
-int gsr_average=0;
-unsigned long time;
+#include <PulseSensorPlayground.h>
 #include <SPI.h>
 #include <SD.h>
-PulseSensorPlayground pulseSensor;  // Creates an instance of the PulseSensorPlayground object called "pulseSensor"
+
+// Pin variables
+const int MOTORPIN = 6;
+const int HEARTPIN = 0; 
+const int GSR=SCL;
+const int LED13 = 13;
+
+// Calculation constants
+const int VIB_THRESHOLD = 110;
+const int COUNT_MEASURES = 25;
+
+// Variables
+int threshold = 515;
+int counter = 0;
+int sensorValue=0;
+int gsrAverage=0;
+unsigned long time;
+
+PulseSensorPlayground pulseSensor;
 File myFile;
 
+// Setup, runs once each time the device is started
 void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
@@ -34,7 +41,7 @@ void setup() {
   }
   Serial.println("initialization done.");
 
-  // open the file. note that only one file can be open at a time,
+  // open the file. Only one file can be open at a time,
   // so you have to close this one before opening another.
   myFile = SD.open("test.txt", FILE_WRITE);
 
@@ -50,27 +57,30 @@ void setup() {
     Serial.println("error opening test.txt");
   }
 
-Serial.begin(9600);          // For Serial Monitor
-
   // Configure the PulseSensor object, by assigning our variables to it. 
-  pulseSensor.analogInput(PulseWire);   
+  pulseSensor.analogInput(HEARTPIN);   
   pulseSensor.blinkOnPulse(LED13);       //auto-magically blink Arduino's LED with heartbeat.
-  pulseSensor.setThreshold(Threshold);   
+  pulseSensor.setthreshold(threshold);   
 
   // Double-check the "pulseSensor" object was created and "began" seeing a signal. 
    if (pulseSensor.begin()) {
-    Serial.println("We created a pulseSensor Object !");  //This prints one time at Arduino power-up,  or on Arduino reset.  
+    Serial.println("We created a pulseSensor object!");  //This prints one time at Arduino power-up,  or on Arduino reset.  
   }
-  pinMode(motorPin, OUTPUT);
+
+  // Set the pin controlling the vibration motor to an output
+  pinMode(MOTORPIN, OUTPUT);
 }
 
-
+// this function loops while the device is running
 void loop() {
   time = millis();
- const int countMeasures = 10;
-   // Calls function on our pulseSensor object that returns BPM as an "int".
-   long sum=0; //used for the GSr sensor"s averageing
-  while(counter <= countMeasures) {
+  const int COUNT_MEASURES = 10;
+  long sum=0; // used for the GSr sensor"s averageing
+
+  // Collecting data for a certain amount of loops. 
+  // End of while loop, then we write data to SD card
+  while(counter <= COUNT_MEASURES) {
+    // Calls function on our pulseSensor object that returns BPM as an "int"
     int myBPM = pulseSensor.getBeatsPerMinute(); //holds the BPM value for now
     
     if (pulseSensor.sawStartOfBeat()) {            // Constantly test to see if "a beat happened". 
@@ -81,12 +91,17 @@ void loop() {
       sensorValue = analogRead(GSR);
       sum += sensorValue;
       }
-    delay(10);   
-} //end of while loop, writes data to SD card
-gsr_average = sum/countMeasures;
-Serial.println("Loop ended");
-Serial.println(time);
-myFile = SD.open("test.txt", FILE_WRITE);
+    
+    // Have a delay for a more stable signal, maybe make this a variable?
+    delay(10);
+
+  }
+
+  Serial.println("Loop ended");
+  gsrAverage = sum/COUNT_MEASURES;
+  Serial.println(time);
+
+  myFile = SD.open("test.txt", FILE_WRITE);
   if (myFile) {
     int myBPM = pulseSensor.getBeatsPerMinute();
     int seconds = time/1000;
@@ -95,7 +110,7 @@ myFile = SD.open("test.txt", FILE_WRITE);
     myFile.print(",");
     myFile.print(myBPM);
     myFile.print(",");
-    myFile.println(gsr_average);
+    myFile.println(gsrAverage);
     // close the file:
     myFile.close();
     Serial.println("done.");
