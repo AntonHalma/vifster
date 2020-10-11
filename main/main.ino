@@ -24,6 +24,8 @@ unsigned long time;
 PulseSensorPlayground pulseSensor;
 File myFile;
 
+void vibrate(int seconds, )
+
 // Setup, runs once each time the device is started
 void setup() {
   // Open serial communications and wait for port to open:
@@ -31,7 +33,6 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-
 
   Serial.print("Initializing SD card...");
 
@@ -75,13 +76,13 @@ void setup() {
 void loop() {
   time = millis();
   const int COUNT_MEASURES = 10;
-  long sum=0; // used for the GSr sensor"s averageing
+  long gsrSum=0; // used for the GSr sensor"s averageing
 
   // Collecting data for a certain amount of loops. 
   // End of while loop, then we write data to SD card
   while(counter <= COUNT_MEASURES) {
     // Calls function on our pulseSensor object that returns BPM as an "int"
-    int myBPM = pulseSensor.getBeatsPerMinute(); //holds the BPM value for now
+    int myBPM = pulseSensor.getBeatsPerMinute(); // holds the BPM value for now
     
     if (pulseSensor.sawStartOfBeat()) {            // Constantly test to see if "a beat happened". 
       Serial.println("♥  A HeartBeat Happened ! "); // If test is "true", print a message "a heartbeat happened".
@@ -89,7 +90,7 @@ void loop() {
       Serial.println(myBPM);                        
       counter++;
       sensorValue = analogRead(GSR);
-      sum += sensorValue;
+      gsrSum += sensorValue;
       }
     
     // Have a delay for a more stable signal, maybe make this a variable?
@@ -98,7 +99,7 @@ void loop() {
   }
 
   Serial.println("Loop ended");
-  gsrAverage = sum/COUNT_MEASURES;
+  gsrAverage = gsrSum/COUNT_MEASURES;
   Serial.println(time);
 
   myFile = SD.open("test.txt", FILE_WRITE);
