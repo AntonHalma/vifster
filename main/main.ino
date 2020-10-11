@@ -24,8 +24,6 @@ unsigned long time;
 PulseSensorPlayground pulseSensor;
 File myFile;
 
-void vibrate(int seconds, )
-
 // Setup, runs once each time the device is started
 void setup() {
   // Open serial communications and wait for port to open:
