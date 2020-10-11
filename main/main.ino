@@ -22,7 +22,34 @@ int gsrAverage=0;
 unsigned long time;
 
 PulseSensorPlayground pulseSensor;
-File myFile;
+
+/**
+ * Writes to given file.
+ *
+ * This function finds a file based on the filename and then writes a specified given line to it.
+ *
+ * @param filename the filename of the file to write to, with extension
+ * @param line the lines to write to a file
+ */
+void writeToFile(String filename, String line){
+  File fileToWrite = SD.open(filename, FILE_WRITE);
+
+  // if the file opened okay, write to it:
+  if (myFile) {
+    String serialPrintString = "Writing to " + filename
+    Serial.print(serialPrintString);
+
+    fileToWrite.println(line);
+    // close the file:
+    fileToWrite.close();
+
+    Serial.println("done.");
+  } else {
+    // if the file didn't open, print an error:
+    String serialPrintString = "Error opening " + filename
+    Serial.println(serialPrintString);
+  }
+}
 
 // Setup, runs once each time the device is started
 void setup() {
@@ -40,21 +67,7 @@ void setup() {
   }
   Serial.println("initialization done.");
 
-  // open the file. Only one file can be open at a time,
-  // so you have to close this one before opening another.
-  myFile = SD.open("test.txt", FILE_WRITE);
-
-  // if the file opened okay, write to it:
-  if (myFile) {
-    Serial.print("Writing to test.txt...");
-    myFile.println("T,BPM,GSR");
-    // close the file:
-    myFile.close();
-    Serial.println("done.");
-  } else {
-    // if the file didn't open, print an error:
-    Serial.println("error opening test.txt");
-  }
+  writeToFile("test.txt", "T,BPM,GSR")
 
   // Configure the PulseSensor object, by assigning our variables to it. 
   pulseSensor.analogInput(HEARTPIN);   
@@ -82,7 +95,7 @@ void loop() {
     // Calls function on our pulseSensor object that returns BPM as an "int"
     int myBPM = pulseSensor.getBeatsPerMinute(); // holds the BPM value for now
     
-    if (pulseSensor.sawStartOfBeat()) {            // Constantly test to see if "a beat happened". 
+    if (pulseSensor.sawStartOfBeat()) {            // Constantly test to see if "a beat happened".
       Serial.println("♥  A HeartBeat Happened ! "); // If test is "true", print a message "a heartbeat happened".
       Serial.print("BPM: ");                        
       Serial.println(myBPM);                        
@@ -93,30 +106,19 @@ void loop() {
     
     // Have a delay for a more stable signal, maybe make this a variable?
     delay(10);
-
   }
 
   Serial.println("Loop ended");
+
   gsrAverage = gsrSum/COUNT_MEASURES;
   Serial.println(time);
 
-  myFile = SD.open("test.txt", FILE_WRITE);
-  if (myFile) {
-    int myBPM = pulseSensor.getBeatsPerMinute();
-    int seconds = time/1000;
-    Serial.print("Writing BPM to test.txt...");
-    myFile.print(seconds);
-    myFile.print(",");
-    myFile.print(myBPM);
-    myFile.print(",");
-    myFile.println(gsrAverage);
-    // close the file:
-    myFile.close();
-    Serial.println("done.");
-  } else {
-    // if the file didn't open, print an error:
-    Serial.println("error opening test.txt");
-  }
+  int myBPM = pulseSensor.getBeatsPerMinute();
+  int seconds = time/1000;
+
+  writeLine = seconds + ", " + myBPM + ", " + gsrAverage
+  writeToFile("test.txt", writeToFile)
+
   counter = 0;
 
 }
