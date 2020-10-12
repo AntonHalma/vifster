@@ -11,6 +11,7 @@ const int GSR=SCL;
 const int LED13 = 13;
 
 // Calculation constants
+const int CHECKING_HZ = 8;
 const int VIB_THRESHOLD = 110;
 const int COUNT_MEASURES = 25;
 
@@ -19,6 +20,7 @@ int threshold = 515;
 int counter = 0;
 int sensorValue=0;
 int gsrAverage=0;
+int checkingDelay = 1000/CHECKING_HZ;
 unsigned long time;
 
 PulseSensorPlayground pulseSensor;
@@ -102,8 +104,8 @@ void loop() {
     gsrSum += sensorValue;
     
     // TODO: Have a delay for a more stable signal, maybe make this a variable?
-    // Currently checks 2x per second
-    delay(500);
+    // Currently checks at CHECKING_HZ Hz
+    delay(checkingDelay);
   }
 
   Serial.println("Loop ended");
