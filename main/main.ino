@@ -95,17 +95,15 @@ void loop() {
     // Calls function on our pulseSensor object that returns BPM as an "int"
     int myBPM = pulseSensor.getBeatsPerMinute(); // holds the BPM value for now
     
-    if (pulseSensor.sawStartOfBeat()) {            // Constantly test to see if "a beat happened".
-      Serial.println("♥  A HeartBeat Happened ! "); // If test is "true", print a message "a heartbeat happened".
-      Serial.print("BPM: ");                        
-      Serial.println(myBPM);                        
-      counter++;
-      sensorValue = analogRead(GSR);
-      gsrSum += sensorValue;
-      }
+    Serial.print("BPM: ");                        
+    Serial.println(myBPM);                        
+    counter++;
+    sensorValue = analogRead(GSR);
+    gsrSum += sensorValue;
     
-    // Have a delay for a more stable signal, maybe make this a variable?
-    delay(10);
+    // TODO: Have a delay for a more stable signal, maybe make this a variable?
+    // Currently checks 2x per second
+    delay(500);
   }
 
   Serial.println("Loop ended");
