@@ -11,13 +11,12 @@ const int GSR=SCL;
 const int LED13 = 13;
 
 // Calculation constants
-const int CHECKING_HZ = 8;
+const int CHECKING_HZ = 10;
 const int VIB_THRESHOLD = 110;
-const int COUNT_MEASURES = 25;
+const int COUNT_MEASURES = 10;
 
 // Variables
 int threshold = 515;
-int counter = 0;
 int sensorValue=0;
 int gsrAverage=0;
 int checkingDelay = 1000/CHECKING_HZ;
@@ -77,7 +76,7 @@ void setup() {
   pulseSensor.setThreshold(threshold);   
 
   // Double-check the "pulseSensor" object was created and "began" seeing a signal. 
-   if (pulseSensor.begin()) {
+  if (pulseSensor.begin()) {
     Serial.println("We created a pulseSensor object!");  //This prints one time at Arduino power-up,  or on Arduino reset.  
   }
 
@@ -88,18 +87,19 @@ void setup() {
 // this function loops while the device is running
 void loop() {
   time = millis();
-  const int COUNT_MEASURES = 10;
   long gsrSum=0; // used for the GSr sensor"s averageing
 
   // Collecting data for a certain amount of loops. 
   // End of while loop, then we write data to SD card
-  while(counter <= COUNT_MEASURES) {
+  for(int i = 0; i < COUNT_MEASURES; i++) {
+    if (i == 5) { // when the counter is 5, the while loop has had 5 * 100 seconds waited
+      digitalWrite(MOTORPIN, LOW); // turn off the vibration motor
+    }
     // Calls function on our pulseSensor object that returns BPM as an "int"
     int myBPM = pulseSensor.getBeatsPerMinute(); // holds the BPM value for now
-    
+
     Serial.print("BPM: ");                        
-    Serial.println(myBPM);                        
-    counter++;
+    Serial.println(myBPM);
     sensorValue = analogRead(GSR);
     gsrSum += sensorValue;
     
@@ -119,6 +119,9 @@ void loop() {
   String writeLine = String(seconds) + ", " + String(myBPM) + ", " + String(gsrAverage);
   writeToFile("test.txt", writeLine);
 
-  counter = 0;
-
+  // Make the vibration motor vibrate on a pulse
+  // TODO: make variables of the numbers and make them correct
+  if (myBPM > 90 && gsrAverage > 10) {
+    digitalWrite(MOTORPIN, HIGH);
+  }
 }
