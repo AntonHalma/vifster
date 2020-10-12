@@ -35,8 +35,8 @@ void writeToFile(String filename, String line){
   File fileToWrite = SD.open(filename, FILE_WRITE);
 
   // if the file opened okay, write to it:
-  if (myFile) {
-    String serialPrintString = "Writing to " + filename
+  if (fileToWrite) {
+    String serialPrintString = "Writing to " + filename;
     Serial.print(serialPrintString);
 
     fileToWrite.println(line);
@@ -46,7 +46,7 @@ void writeToFile(String filename, String line){
     Serial.println("done.");
   } else {
     // if the file didn't open, print an error:
-    String serialPrintString = "Error opening " + filename
+    String serialPrintString = "Error opening " + filename;
     Serial.println(serialPrintString);
   }
 }
@@ -67,12 +67,12 @@ void setup() {
   }
   Serial.println("initialization done.");
 
-  writeToFile("test.txt", "T,BPM,GSR")
+  writeToFile("test.txt", "T,BPM,GSR");
 
   // Configure the PulseSensor object, by assigning our variables to it. 
   pulseSensor.analogInput(HEARTPIN);   
   pulseSensor.blinkOnPulse(LED13);       //auto-magically blink Arduino's LED with heartbeat.
-  pulseSensor.setthreshold(threshold);   
+  pulseSensor.setThreshold(threshold);   
 
   // Double-check the "pulseSensor" object was created and "began" seeing a signal. 
    if (pulseSensor.begin()) {
@@ -116,8 +116,8 @@ void loop() {
   int myBPM = pulseSensor.getBeatsPerMinute();
   int seconds = time/1000;
 
-  writeLine = seconds + ", " + myBPM + ", " + gsrAverage
-  writeToFile("test.txt", writeToFile)
+  String writeLine = String(seconds) + ", " + String(myBPM) + ", " + String(gsrAverage);
+  writeToFile("test.txt", writeLine);
 
   counter = 0;
 
