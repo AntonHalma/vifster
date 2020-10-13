@@ -73,7 +73,6 @@ void setup() {
 
   // Configure the PulseSensor object, by assigning our variables to it. 
   pulseSensor.analogInput(HEARTPIN);   
-  pulseSensor.blinkOnPulse(LED13);       //auto-magically blink Arduino's LED with heartbeat.
   pulseSensor.setThreshold(threshold);   
 
   // Double-check the "pulseSensor" object was created and "began" seeing a signal. 
