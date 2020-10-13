@@ -83,6 +83,7 @@ void setup() {
 
   // Set the pin controlling the vibration motor to an output
   pinMode(MOTORPIN, OUTPUT);
+  digitalWrite(MOTORPIN, LOW);
 }
 
 // this function loops while the device is running
@@ -94,10 +95,10 @@ void loop() {
   // Collecting data for a certain amount of loops. 
   // End of while loop, then we write data to SD card
   for(int i = 0; i < COUNT_MEASURES; i++) {
-    if (i == 5) { // when the counter is 5, the while loop has had 5 * 100 seconds waited
-      analogWrite(MOTORPIN, 0); // turn off the vibration motor
-      Serial.println("LOW");
+    if (i == 2) { // when the counter is 2, the while loop has had 5 * 100 seconds waited
+      digitalWrite(MOTORPIN, LOW); // turn off the vibration motor
     }
+    
     // Calls function on our pulseSensor object that returns BPM as an "int"
     int myBPM = pulseSensor.getBeatsPerMinute(); // holds the BPM value for now
 
@@ -125,7 +126,6 @@ void loop() {
   // Make the vibration motor vibrate on a pulse
   // TODO: make variables of the numbers and make them correct
   if (bpmAverage > 90) {
-     analogWrite(MOTORPIN, 255);
-     Serial.println("HIGH");
+     digitalWrite(MOTORPIN, HIGH);
   }
 }
