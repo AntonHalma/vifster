@@ -19,6 +19,7 @@ const int COUNT_MEASURES = 10;
 int threshold = 515;
 int sensorValue=0;
 int gsrAverage=0;
+int bpmAverage=0;
 int checkingDelay = 1000/CHECKING_HZ;
 unsigned long time;
 
@@ -88,20 +89,23 @@ void setup() {
 void loop() {
   time = millis();
   long gsrSum=0; // used for the GSr sensor"s averageing
+  long bpmSum=0;
 
   // Collecting data for a certain amount of loops. 
   // End of while loop, then we write data to SD card
   for(int i = 0; i < COUNT_MEASURES; i++) {
     if (i == 5) { // when the counter is 5, the while loop has had 5 * 100 seconds waited
-      digitalWrite(MOTORPIN, LOW); // turn off the vibration motor
+      analogWrite(MOTORPIN, 0); // turn off the vibration motor
+      Serial.println("LOW");
     }
     // Calls function on our pulseSensor object that returns BPM as an "int"
     int myBPM = pulseSensor.getBeatsPerMinute(); // holds the BPM value for now
 
-    Serial.print("BPM: ");                        
-    Serial.println(myBPM);
     sensorValue = analogRead(GSR);
     gsrSum += sensorValue;
+    bpmSum += myBPM;
+
+    Serial.print("BPM:"); Serial.print(myBPM); Serial.print(","); Serial.print("GSR:"); Serial.println(sensorValue);
     
     // TODO: Have a delay for a more stable signal, maybe make this a variable?
     // Currently checks at CHECKING_HZ Hz
@@ -110,18 +114,18 @@ void loop() {
 
   Serial.println("Loop ended");
 
-  gsrAverage = gsrSum/COUNT_MEASURES;
-  Serial.println(time);
+  gsrAverage = gsrSum/COUNT_MEASURES / 10; // TODO: REMOVE /10 !!!
+  bpmAverage = bpmSum/COUNT_MEASURES;
 
-  int myBPM = pulseSensor.getBeatsPerMinute();
   int seconds = time/1000;
 
-  String writeLine = String(seconds) + ", " + String(myBPM) + ", " + String(gsrAverage);
+  String writeLine = String(seconds) + ", " + String(bpmAverage) + ", " + String(gsrAverage);
   writeToFile("test.txt", writeLine);
 
   // Make the vibration motor vibrate on a pulse
   // TODO: make variables of the numbers and make them correct
-  if (myBPM > 90 && gsrAverage > 10) {
-    digitalWrite(MOTORPIN, HIGH);
+  if (bpmAverage > 90) {
+     analogWrite(MOTORPIN, 255);
+     Serial.println("HIGH");
   }
 }
