@@ -127,6 +127,11 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
+  // Set the pin to output
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_RED, OUTPUT);
+  pinMode(MOTORPIN, OUTPUT);
+
   Serial.print("Initializing SD card...");
 
   if (!SD.begin(4)) {
@@ -153,8 +158,6 @@ void setup() {
     Serial.println("We created a pulseSensor object!");  //This prints one time at Arduino power-up,  or on Arduino reset.  
   }
 
-  // Set the pin controlling the vibration motor to an output
-  pinMode(MOTORPIN, OUTPUT);
   digitalWrite(MOTORPIN, LOW);
   digitalWrite(LED_GREEN, LOW);
 }
