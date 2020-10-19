@@ -9,6 +9,8 @@ const int MOTORPIN = 6;
 const int HEARTPIN = 0; 
 const int GSR=SCL;
 const int LED13 = 13;
+const int LED_RED = 2;
+const int LED_GREEN = 3;
 
 // Calculation constants
 const int CHECKING_HZ = 10;
@@ -110,13 +112,16 @@ int getLogNumber() {
   } else {
     // if the file didn't open, print an error:
     Serial.println("GET_LOG_NUMBER: error opening " + configName);
-    return 99;
+    return 999;
   }
 }
 
 // Setup, runs once each time the device is started
 void setup() {
   // Open serial communications and wait for port to open:
+  digitalWrite(LED_GREEN, HIGH);
+  digitalWrite(LED_RED, LOW);
+
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
@@ -126,6 +131,7 @@ void setup() {
 
   if (!SD.begin(4)) {
     Serial.println("initialization failed!");
+    digitalWrite(LED_RED, HIGH); // turn off the vibration motor
     while (1);
   }
   Serial.println("initialization done.");
@@ -150,6 +156,7 @@ void setup() {
   // Set the pin controlling the vibration motor to an output
   pinMode(MOTORPIN, OUTPUT);
   digitalWrite(MOTORPIN, LOW);
+  digitalWrite(LED_GREEN, LOW);
 }
 
 // this function loops while the device is running
@@ -163,6 +170,7 @@ void loop() {
   for(int i = 0; i < COUNT_MEASURES; i++) {
     if (i == 2) { // when the counter is 2, the while loop has had 5 * 100 seconds waited
       digitalWrite(MOTORPIN, LOW); // turn off the vibration motor
+      digitalWrite(LED_GREEN, LOW);
     }
     
     // Calls function on our pulseSensor object that returns BPM as an "int"
@@ -181,7 +189,7 @@ void loop() {
 
   Serial.println("Loop ended");
 
-  gsrAverage = gsrSum/COUNT_MEASURES / 10; // TODO: REMOVE /10 !!!
+  gsrAverage = float(gsrSum/COUNT_MEASURES / 10); // TODO: REMOVE /10 !!!
   bpmAverage = bpmSum/COUNT_MEASURES;
 
   int seconds = time/1000;
@@ -193,5 +201,6 @@ void loop() {
   // TODO: make variables of the numbers and make them correct
   if (bpmAverage > 90) {
      digitalWrite(MOTORPIN, HIGH);
+     digitalWrite(LED_GREEN, HIGH);
   }
 }
