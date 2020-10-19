@@ -192,7 +192,7 @@ void loop() {
 
   Serial.println("Loop ended");
 
-  gsrAverage = float(gsrSum/COUNT_MEASURES / 10); // TODO: REMOVE /10 !!!
+  gsrAverage = gsrSum/COUNT_MEASURES / 10; // TODO: REMOVE /10 !!!
   bpmAverage = bpmSum/COUNT_MEASURES;
 
   int seconds = time/1000;
