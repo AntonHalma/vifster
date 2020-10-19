@@ -20,7 +20,7 @@ const int COUNT_MEASURES = 10;
 // Variables
 int threshold = 515;
 int sensorValue=0;
-int gsrAverage=0;
+float gsrAverage=0;
 int bpmAverage=0;
 int checkingDelay = 1000/CHECKING_HZ;
 unsigned long time;
