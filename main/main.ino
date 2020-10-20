@@ -136,7 +136,7 @@ void setup() {
 
   if (!SD.begin(4)) {
     Serial.println("initialization failed!");
-    digitalWrite(LED_RED, HIGH); // turn off the vibration motor
+    digitalWrite(LED_RED, HIGH);
     while (1);
   }
   Serial.println("initialization done.");
@@ -160,6 +160,15 @@ void setup() {
 
   digitalWrite(MOTORPIN, LOW);
   digitalWrite(LED_GREEN, LOW);
+
+  // Blink the green light 3 times to indicate the setup was completed
+  // and the device has started
+  for(int i = 0; i < 3; i++) {
+    digitalWrite(LED_GREEN, HIGH);
+    delay(1000)
+    digitalWrite(LED_GREEN, LOW);
+    delay(1000)
+  }
 }
 
 // this function loops while the device is running
