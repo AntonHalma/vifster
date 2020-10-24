@@ -211,7 +211,7 @@ void loop() {
 
   // Make the vibration motor vibrate on a pulse
   // TODO: make variables of the numbers and make them correct
-  if (bpmAverage > 90) {
+  if (bpmAverage > 90 && gsrAverage > 30) {
      digitalWrite(MOTORPIN, HIGH);
      digitalWrite(LED_GREEN, HIGH);
   }
