@@ -165,9 +165,9 @@ void setup() {
   // and the device has started
   for(int i = 0; i < 3; i++) {
     digitalWrite(LED_GREEN, HIGH);
-    delay(1000)
+    delay(1000);
     digitalWrite(LED_GREEN, LOW);
-    delay(1000)
+    delay(1000);
   }
 }
 
